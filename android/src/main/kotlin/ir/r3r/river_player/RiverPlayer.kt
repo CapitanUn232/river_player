@@ -584,19 +584,17 @@ internal class RiverPlayer(
 
     @Suppress("DEPRECATION")
     private fun setAudioAttributes(exoPlayer: ExoPlayer?, mixWithOthers: Boolean) {
-//        val audioComponent = exoPlayer ?: return
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-//            audioComponent.setAudioAttributes(
-//                AudioAttributes.Builder().setContentType(C.AUDIO_CONTENT_TYPE_MOVIE).build(),
-//                !mixWithOthers
-//            )
-//        } else {
-//            audioComponent.setAudioAttributes(
-//                AudioAttributes.Builder().setContentType(C.AUDIO_CONTENT_TYPE_MUSIC).build(),
-//                !mixWithOthers
-//            )
-//        }
-        return 0;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            exoPlayer?.setAudioAttributes(
+                AudioAttributes.Builder().setContentType(C.AUDIO_CONTENT_TYPE_MOVIE).build(),
+                !mixWithOthers
+            )
+        } else {
+            exoPlayer?.setAudioAttributes(
+                AudioAttributes.Builder().setContentType(C.AUDIO_CONTENT_TYPE_MUSIC).build(),
+                !mixWithOthers
+            )
+        }
     }
 
     fun play() {
