@@ -1,4 +1,4 @@
-@OptIn(UnstableApi::class) package ir.r3r.river_player
+package ir.r3r.river_player
 
 import android.annotation.SuppressLint
 import android.app.NotificationChannel
