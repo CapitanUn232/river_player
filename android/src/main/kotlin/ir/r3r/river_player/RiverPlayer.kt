@@ -1,4 +1,4 @@
-package ir.r3r.river_player
+@OptIn(UnstableApi::class) package ir.r3r.river_player
 
 import android.annotation.SuppressLint
 import android.app.NotificationChannel
@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.media.session.MediaSession.Token
 import android.net.Uri
 import android.os.Build
 import android.os.Handler
@@ -71,6 +72,7 @@ import android.support.v4.media.session.PlaybackStateCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.util.Log
 import android.view.Surface
+import androidx.annotation.OptIn
 import androidx.lifecycle.Observer
 
 
@@ -126,6 +128,7 @@ import androidx.media3.session.MediaSession
 
 import androidx.media3.common.TrackSelectionParameters
 import androidx.media3.common.TrackSelectionOverride
+import androidx.media3.common.util.UnstableApi
 
 // import com.google.android.exoplayer2.upstream.DataSource
 import androidx.media3.datasource.DataSource
@@ -383,8 +386,12 @@ internal class RiverPlayer(
         playerNotificationManager = PlayerNotificationManager.Builder(
             context, NOTIFICATION_ID,
             playerNotificationChannelName!!
-        ).setMediaDescriptionAdapter(mediaDescriptionAdapter).build()
 
+        )
+            .setMediaDescriptionAdapter(mediaDescriptionAdapter)
+            .build()
+
+        //playerNotificationManager.setMediaSessionToken(mediaSession.)
         playerNotificationManager?.apply {
 
             exoPlayer?.let {
@@ -392,10 +399,6 @@ internal class RiverPlayer(
                 setUseNextAction(false)
                 setUsePreviousAction(false)
                 setUseStopAction(false)
-            }
-
-            setupMediaSession(context)?.let {
-                setMediaSessionToken(it.sessionToken)
             }
         }
 
@@ -581,18 +584,19 @@ internal class RiverPlayer(
 
     @Suppress("DEPRECATION")
     private fun setAudioAttributes(exoPlayer: ExoPlayer?, mixWithOthers: Boolean) {
-        val audioComponent = exoPlayer?.audioComponent ?: return
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            audioComponent.setAudioAttributes(
-                AudioAttributes.Builder().setContentType(C.CONTENT_TYPE_MOVIE).build(),
-                !mixWithOthers
-            )
-        } else {
-            audioComponent.setAudioAttributes(
-                AudioAttributes.Builder().setContentType(C.CONTENT_TYPE_MUSIC).build(),
-                !mixWithOthers
-            )
-        }
+//        val audioComponent = exoPlayer ?: return
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//            audioComponent.setAudioAttributes(
+//                AudioAttributes.Builder().setContentType(C.AUDIO_CONTENT_TYPE_MOVIE).build(),
+//                !mixWithOthers
+//            )
+//        } else {
+//            audioComponent.setAudioAttributes(
+//                AudioAttributes.Builder().setContentType(C.AUDIO_CONTENT_TYPE_MUSIC).build(),
+//                !mixWithOthers
+//            )
+//        }
+        return 0;
     }
 
     fun play() {
