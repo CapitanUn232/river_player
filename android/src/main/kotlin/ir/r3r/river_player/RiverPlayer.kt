@@ -456,7 +456,7 @@ internal class RiverPlayer(
 
     @OptIn(UnstableApi::class)
     class CustomHttpDataSourceFactory(
-        private val userAgent: String,
+        private val userAgent: String?,
         private val token: Any?
     ) : HttpDataSource.Factory {
 
@@ -467,7 +467,7 @@ internal class RiverPlayer(
 
         init {
             defaultFactory.setDefaultRequestProperties(
-                mapOf("User-Agent" to userAgent)
+                mapOf("User-Agent" to userAgent.toString())
             )
         }
 
@@ -512,7 +512,7 @@ internal class RiverPlayer(
         mediaDataSourceFactory: DataSource.Factory,
         formatHint: String?,
         cacheKey: String?,
-        userAgent: String,
+        userAgent: String?,
         context: Context
     ): MediaSource {
         val type: Int
