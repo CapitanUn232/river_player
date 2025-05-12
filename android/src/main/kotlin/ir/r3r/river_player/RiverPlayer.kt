@@ -138,6 +138,9 @@ import androidx.media3.datasource.DefaultDataSource
 
 //import com.google.android.exoplayer2.util.Util
 import androidx.media3.common.util.Util
+import androidx.media3.datasource.DataSpec
+import androidx.media3.datasource.HttpDataSource
+import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 
 import java.io.File
 import java.lang.Exception
@@ -270,7 +273,7 @@ internal class RiverPlayer(
         } else {
             dataSourceFactory = DefaultDataSource.Factory(context)
         }
-        val mediaSource = buildMediaSource(uri, dataSourceFactory, formatHint, cacheKey, context)
+        val mediaSource = buildMediaSource(uri, dataSourceFactory, formatHint, cacheKey, userAgent, context)
         if (overriddenDuration != 0L) {
             val clippingMediaSource = ClippingMediaSource(mediaSource, 0, overriddenDuration * 1000)
             exoPlayer?.setMediaSource(clippingMediaSource)
@@ -451,14 +454,79 @@ internal class RiverPlayer(
         bitmap = null
     }
 
+    @OptIn(UnstableApi::class)
+    class CustomHttpDataSourceFactory(
+        private val userAgent: String,
+        private val token: Any?
+    ) : HttpDataSource.Factory {
+
+        private val defaultFactory = DefaultHttpDataSource.Factory()
+            .setConnectTimeoutMs(8000)
+            .setAllowCrossProtocolRedirects(true)
+            .setReadTimeoutMs(8000)
+
+        init {
+            defaultFactory.setDefaultRequestProperties(
+                mapOf("User-Agent" to userAgent)
+            )
+        }
+
+        override fun createDataSource(): HttpDataSource {
+            Log.d("daznToken", token.toString())
+            val dataSource = defaultFactory.createDataSource()
+            return object : HttpDataSource by dataSource {
+                override fun open(
+                    dataSpec: DataSpec
+                ): Long {
+                    val originalUri = dataSpec.uri
+                    lateinit var updatedUri: Uri
+                    val urlPath = originalUri.path
+                    val allowedExt: Array<String> = arrayOf(".dash", ".m4s")
+                    if(token != null) {
+                        if (urlPath?.contains(".dash") == true || urlPath?.contains(".m4s") == true) {
+                            updatedUri = originalUri.buildUpon()
+                                .appendQueryParameter("dazn-token", token.toString())
+                                .build()
+                        } else {
+                            updatedUri = originalUri
+                        }
+                    } else {
+                        updatedUri = originalUri
+                    }
+                    Log.d("updatePath", urlPath.toString())
+                    val updatedDataSpec = dataSpec.buildUpon().setUri(updatedUri).build()
+                    return dataSource.open(updatedDataSpec)
+                }
+            }
+        }
+
+        override fun setDefaultRequestProperties(defaultRequestProperties: MutableMap<String, String>): HttpDataSource.Factory {
+            TODO("Not yet implemented")
+        }
+
+
+    }
+
     private fun buildMediaSource(
         uri: Uri,
         mediaDataSourceFactory: DataSource.Factory,
         formatHint: String?,
         cacheKey: String?,
+        userAgent: String,
         context: Context
     ): MediaSource {
         val type: Int
+        lateinit var httpDataSourceFactory: CustomHttpDataSourceFactory;
+        val uriParse = Uri.parse(uri.toString())
+        val uriParameters = uriParse.queryParameterNames.associateWith { uri.getQueryParameters(it) }
+        if(uriParameters.containsKey("dazn-token"))
+        {
+            val token: String = uriParameters["dazn-token"]?.get(0).toString()
+            httpDataSourceFactory = CustomHttpDataSourceFactory(userAgent, token);
+        } else {
+            httpDataSourceFactory = CustomHttpDataSourceFactory(userAgent, null);
+        }
+
         if (formatHint == null) {
             var lastPathSegment = uri.lastPathSegment
             if (lastPathSegment == null) {
@@ -504,11 +572,11 @@ internal class RiverPlayer(
             }
         }
 
-        drmSessionManager?.let { drmSessionManager ->
-            mediaFactory.setDrmSessionManagerProvider(DrmSessionManagerProvider { drmSessionManager })
-        }
+        val mediaSourceFactory = DefaultMediaSourceFactory(httpDataSourceFactory)
+            .setDrmSessionManagerProvider { drmSessionManager!! }
+            .createMediaSource(mediaItemBuilder.build())
 
-        return mediaFactory.createMediaSource(mediaItemBuilder.build())
+        return mediaSourceFactory
     }
 
     private fun setupVideoPlayer(
