@@ -517,6 +517,7 @@ internal class RiverPlayer(
     ): MediaSource {
         val type: Int
         lateinit var httpDataSourceFactory: CustomHttpDataSourceFactory;
+        Log.d("Porva", "test")
         val uriParse = Uri.parse(uri.toString())
         val uriParameters = uriParse.queryParameterNames.associateWith { uri.getQueryParameters(it) }
         if(uriParameters.containsKey("dazn-token"))
