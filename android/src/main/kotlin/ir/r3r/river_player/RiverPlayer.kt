@@ -251,6 +251,7 @@ internal class RiverPlayer(
                 Log.e(TAG, "Protected content not supported on API levels below 18")
                 null
             } else {
+                Log.d("clearKey", clearKey)
                 DefaultDrmSessionManager.Builder()
                     .setUuidAndExoMediaDrmProvider(
                         C.CLEARKEY_UUID,
@@ -693,7 +694,8 @@ internal class RiverPlayer(
     fun setTrackParameters(width: Int, height: Int, bitrate: Int) {
         val parametersBuilder = trackSelector.buildUponParameters()
         if (width != 0 && height != 0) {
-            parametersBuilder.setMaxVideoSize(width, height)
+//            parametersBuilder.setMaxVideoSize(width, height)
+            parametersBuilder.setMaxVideoSize(1280, 720)
         }
         if (bitrate != 0) {
             parametersBuilder.setMaxVideoBitrate(bitrate)
