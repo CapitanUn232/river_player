@@ -175,6 +175,7 @@ internal class RiverPlayer(
     private val customDefaultLoadControl: CustomDefaultLoadControl =
         customDefaultLoadControl ?: CustomDefaultLoadControl()
     private var lastSendBufferedPosition = 0L
+    lateinit var parameters: DefaultTrackSelector.Parameters
 
     init {
         val loadBuilder = DefaultLoadControl.Builder()
@@ -185,6 +186,11 @@ internal class RiverPlayer(
             this.customDefaultLoadControl.bufferForPlaybackAfterRebufferMs
         )
         loadControl = loadBuilder.build()
+        parameters = trackSelector.parameters.buildUpon()
+                .setMinVideoSize(1280, 720)
+                .setMaxVideoSize(1280, 720)
+                .build()
+        trackSelector.parameters = parameters
         exoPlayer = ExoPlayer.Builder(context)
             .setTrackSelector(trackSelector)
             .setLoadControl(loadControl)
@@ -692,7 +698,7 @@ internal class RiverPlayer(
     }
 
     fun setTrackParameters(width: Int, height: Int, bitrate: Int) {
-        val parametersBuilder = trackSelector.buildUponParameters()
+        // val parametersBuilder = trackSelector.buildUponParameters()
         // if (width != 0 && height != 0) {
         //     parametersBuilder.setMaxVideoSize(width, height)
         //     Log.d("Quality", "720p setted")
@@ -705,9 +711,9 @@ internal class RiverPlayer(
         //     parametersBuilder.clearVideoSizeConstraints()
         //     parametersBuilder.setMaxVideoBitrate(Int.MAX_VALUE)
         // }
-        Log.d("Quality", "720p setted")
-        parametersBuilder.setMaxVideoSize(1280, 720) //SET TO 720p
-        trackSelector.setParameters(parametersBuilder)
+        // Log.d("Quality", "720p setted")
+        // parametersBuilder.setMaxVideoSize(1280, 720) //SET TO 720p
+        // trackSelector.setParameters(parametersBuilder)
     }
 
     fun seekTo(location: Int) {
