@@ -693,18 +693,18 @@ internal class RiverPlayer(
 
     fun setTrackParameters(width: Int, height: Int, bitrate: Int) {
         val parametersBuilder = trackSelector.buildUponParameters()
-        if (width != 0 && height != 0) {
-            parametersBuilder.setMaxVideoSize(width, height)
-            Log.d("Quality", "720p setted")
+        // if (width != 0 && height != 0) {
+        //     parametersBuilder.setMaxVideoSize(width, height)
+        //     Log.d("Quality", "720p setted")
 
-        }
-        if (bitrate != 0) {
-            // parametersBuilder.setMaxVideoBitrate(bitrate)
-        }
-        if (width == 0 && height == 0 && bitrate == 0) {
-            parametersBuilder.clearVideoSizeConstraints()
-            parametersBuilder.setMaxVideoBitrate(Int.MAX_VALUE)
-        }
+        // }
+        // if (bitrate != 0) {
+        //     // parametersBuilder.setMaxVideoBitrate(bitrate)
+        // }
+        // if (width == 0 && height == 0 && bitrate == 0) {
+        //     parametersBuilder.clearVideoSizeConstraints()
+        //     parametersBuilder.setMaxVideoBitrate(Int.MAX_VALUE)
+        // }
         Log.d("Quality", "720p setted")
         parametersBuilder.setMaxVideoSize(1280, 720) //SET TO 720p
         trackSelector.setParameters(parametersBuilder)
