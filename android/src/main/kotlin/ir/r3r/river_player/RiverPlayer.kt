@@ -699,7 +699,7 @@ internal class RiverPlayer(
 
         }
         if (bitrate != 0) {
-            parametersBuilder.setMaxVideoBitrate(bitrate)
+            // parametersBuilder.setMaxVideoBitrate(bitrate)
         }
         if (width == 0 && height == 0 && bitrate == 0) {
             parametersBuilder.clearVideoSizeConstraints()
