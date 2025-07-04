@@ -186,8 +186,8 @@ internal class RiverPlayer(
             this.customDefaultLoadControl.bufferForPlaybackAfterRebufferMs
         )
         loadControl = loadBuilder.build()
+        Log.d("exoPlayer", "Messo 720p qualita massima")
         parameters = trackSelector.parameters.buildUpon()
-                .setMinVideoSize(1280, 720)
                 .setMaxVideoSize(1280, 720)
                 .build()
         trackSelector.parameters = parameters
